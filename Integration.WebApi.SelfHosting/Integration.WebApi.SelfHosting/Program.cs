@@ -14,7 +14,7 @@ namespace Integration.WebApi.SelfHosting
             {
                 new EventHandler(rabbitMQ.Channel);
 
-                Console.WriteLine(" Press [enter] to exit.");
+                Console.WriteLine(" Press [enter] to exit.\r\n\r\n");
                 Console.ReadLine();
             }
         }

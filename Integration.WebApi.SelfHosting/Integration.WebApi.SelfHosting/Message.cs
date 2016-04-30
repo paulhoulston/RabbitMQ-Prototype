@@ -2,7 +2,8 @@ namespace Integration.WebApi.SelfHosting
 {
     public class Message
     {
-        public string Name { get; set; }
+        public string EventType { get; set; }
+        public dynamic MetaData { get; set; }
+        public dynamic Data { get; set; }
     }
-
 }
