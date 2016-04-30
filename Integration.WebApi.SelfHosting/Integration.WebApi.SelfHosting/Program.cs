@@ -2,7 +2,6 @@
 using System.Configuration;
 using System.Text;
 using Microsoft.Owin.Hosting;
-using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace Integration.WebApi.SelfHosting
@@ -11,24 +10,15 @@ namespace Integration.WebApi.SelfHosting
     {
         static void Main(string[] args)
         {
-            var factory = new ConnectionFactory() { HostName = ConfigurationManager.AppSettings["RABBITMQ_HOST"] };
-
             using (var webapp = WebApp.Start<Startup>(url: GetBaseAddress()))
-            using (var connection = factory.CreateConnection())
-            using (var channel = connection.CreateModel())
+            using (var rabbitMQ = new RabbitMQClient())
             {
-                channel.QueueDeclare(queue: "hello",
-                                     durable: false,
-                                     exclusive: false,
-                                     autoDelete: false,
-                                     arguments: null);
-
-                var consumer = new EventingBasicConsumer(channel);
+                var consumer = new EventingBasicConsumer(rabbitMQ.Channel);
                 consumer.Received += (model, ea) =>
                 {
                     Console.WriteLine(" [x] Received {0}", Encoding.UTF8.GetString(ea.Body));
                 };
-                channel.BasicConsume(queue: "hello", noAck: true, consumer: consumer);
+                rabbitMQ.Channel.BasicConsume(queue: "hello", noAck: true, consumer: consumer);
 
                 Console.WriteLine(" Press [enter] to exit.");
                 Console.ReadLine();
@@ -43,5 +33,4 @@ namespace Integration.WebApi.SelfHosting
                             ConfigurationManager.AppSettings["HTTP_LISTENING_PORT"]);
         }
     }
-
 }
