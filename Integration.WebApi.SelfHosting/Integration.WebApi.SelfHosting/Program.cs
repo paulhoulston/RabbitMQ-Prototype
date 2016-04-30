@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
 namespace Integration.WebApi.SelfHosting
@@ -11,13 +12,21 @@ namespace Integration.WebApi.SelfHosting
             using (new RestHost())
             using (var rabbitMQ = new RabbitMQClient())
             {
-                var consumer = new EventingBasicConsumer(rabbitMQ.Channel);
-                consumer.Received += HandleEvent;
-                rabbitMQ.Channel.BasicConsume(queue: "hello", noAck: true, consumer: consumer);
+                new EventHandler(rabbitMQ.Channel);
 
                 Console.WriteLine(" Press [enter] to exit.");
                 Console.ReadLine();
             }
+        }
+    }
+
+    class EventHandler
+    {
+        public EventHandler(IModel channel)
+        {
+            var consumer = new EventingBasicConsumer(channel);
+            consumer.Received += HandleEvent;
+            channel.BasicConsume(queue: "hello", noAck: true, consumer: consumer);
         }
 
         private static void HandleEvent(object model, BasicDeliverEventArgs ea)
@@ -25,5 +34,4 @@ namespace Integration.WebApi.SelfHosting
             Console.WriteLine(" [x] Received {0}", Encoding.UTF8.GetString(ea.Body));
         }
     }
-
 }
