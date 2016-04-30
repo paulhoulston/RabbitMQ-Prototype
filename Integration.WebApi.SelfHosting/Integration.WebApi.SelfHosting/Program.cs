@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Configuration;
 using System.Text;
-using Microsoft.Owin.Hosting;
 using RabbitMQ.Client.Events;
 
 namespace Integration.WebApi.SelfHosting
@@ -10,7 +8,7 @@ namespace Integration.WebApi.SelfHosting
     {
         static void Main(string[] args)
         {
-            using (var webapp = WebApp.Start<Startup>(url: GetBaseAddress()))
+            using (new RestHost())
             using (var rabbitMQ = new RabbitMQClient())
             {
                 var consumer = new EventingBasicConsumer(rabbitMQ.Channel);
@@ -26,13 +24,6 @@ namespace Integration.WebApi.SelfHosting
         {
             Console.WriteLine(" [x] Received {0}", Encoding.UTF8.GetString(ea.Body));
         }
-
-        private static string GetBaseAddress()
-        {
-            return string.Format(
-                            "http://{0}:{1}/",
-                            ConfigurationManager.AppSettings["HTTP_LISTENING_HOST"],
-                            ConfigurationManager.AppSettings["HTTP_LISTENING_PORT"]);
-        }
     }
+
 }
