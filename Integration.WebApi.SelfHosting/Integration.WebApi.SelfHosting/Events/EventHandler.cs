@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Text;
+using Integration.WebApi.SelfHosting.Configuration;
 using Integration.WebApi.SelfHosting.Models;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -20,7 +22,15 @@ namespace Integration.WebApi.SelfHosting.Events
         {
             var message = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(ea.Body));
 
-            Console.WriteLine("Received event type '{0}'", message.EventType);
+            var eventMapping =
+                EventsMappingSection
+                    .Settings
+                    .Events
+                    .Cast<EventElement.IAmAnEventMapping>()
+                    .SingleOrDefault(evnt => evnt.EventType.Equals(message.EventType));
+
+
+            Console.WriteLine("Received event type '{0}', run script '{1}'", message.EventType, eventMapping == null ? "not found" : eventMapping.Script);
         }
     }
 }

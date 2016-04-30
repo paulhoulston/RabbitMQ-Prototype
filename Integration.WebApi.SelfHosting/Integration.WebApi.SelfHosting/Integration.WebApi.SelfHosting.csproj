@@ -79,7 +79,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\EventElement.cs" />
+    <Compile Include="Configuration\EventsCollection.cs" />
     <Compile Include="Events\EventHandler.cs" />
+    <Compile Include="Configuration\EventsMappingSection.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Program.cs" />
