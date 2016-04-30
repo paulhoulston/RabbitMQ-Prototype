@@ -1,4 +1,4 @@
-namespace Integration.WebApi.SelfHosting
+namespace Integration.WebApi.SelfHosting.Models
 {
     public class Message
     {

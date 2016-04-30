@@ -79,9 +79,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EventHandler.cs" />
-    <Compile Include="Message.cs" />
-    <Compile Include="MessagesController.cs" />
+    <Compile Include="Events\EventHandler.cs" />
+    <Compile Include="Models\Message.cs" />
+    <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RabbitMQClient.cs" />

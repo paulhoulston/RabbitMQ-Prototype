@@ -1,10 +1,11 @@
 using System;
 using System.Text;
+using Integration.WebApi.SelfHosting.Models;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
-namespace Integration.WebApi.SelfHosting
+namespace Integration.WebApi.SelfHosting.Events
 {
     class EventHandler
     {

@@ -9,7 +9,7 @@ namespace Integration.WebApi.SelfHosting
             using (new RestHost())
             using (var rabbitMQ = new RabbitMQClient())
             {
-                new EventHandler(rabbitMQ.Channel);
+                new Events.EventHandler(rabbitMQ.Channel);
 
                 Console.WriteLine(" Press [enter] to exit.\r\n\r\n");
                 Console.ReadLine();
