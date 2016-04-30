@@ -79,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventHandler.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MessagesController.cs" />
     <Compile Include="Program.cs" />
