@@ -8,6 +8,12 @@ namespace Integration.WebApi.SelfHosting.Configuration
         {
             string EventType { get; }
             string Script { get; }
+            TypeOfScript ScriptType { get; set; }
+        }
+
+        public enum TypeOfScript
+        {
+            PowerShell
         }
 
         [ConfigurationProperty("eventType", IsRequired = true, IsKey = true)]
@@ -22,6 +28,13 @@ namespace Integration.WebApi.SelfHosting.Configuration
         {
             get { return (string)this["script"]; }
             set { this["script"] = value; }
+        }
+
+        [ConfigurationProperty("scriptType", DefaultValue = TypeOfScript.PowerShell)]
+        public TypeOfScript ScriptType
+        {
+            get { return (TypeOfScript)this["scriptType"]; }
+            set { this["scriptType"] = value; }
         }
     }
 }

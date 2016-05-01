@@ -28,8 +28,7 @@ namespace Integration.WebApi.SelfHosting.Events
                     .Events
                     .Cast<EventElement.IAmAnEventMapping>()
                     .SingleOrDefault(evnt => evnt.EventType.Equals(message.EventType));
-
-
+            
             Console.WriteLine("Received event type '{0}', run script '{1}'", message.EventType, eventMapping == null ? "not found" : eventMapping.Script);
         }
     }
