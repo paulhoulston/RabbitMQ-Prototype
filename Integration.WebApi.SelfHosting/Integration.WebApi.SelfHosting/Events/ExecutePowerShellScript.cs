@@ -1,10 +1,19 @@
+using System.IO;
+using System.Management.Automation;
+
 namespace Integration.WebApi.SelfHosting.Events
 {
     class ExecutePowerShellScript : IExecuteScripts
     {
         public void Execute(string scriptPath, dynamic data)
         {
-            System.Console.WriteLine("Executing script '{0}' with data '{1}'", scriptPath, Newtonsoft.Json.JsonConvert.SerializeObject(data));
+            using (PowerShell powerShellInstance = PowerShell.Create())
+            {
+                var script = File.ReadAllText(scriptPath);
+                powerShellInstance.AddScript(script);
+                powerShellInstance.AddParameter("data", data);
+                powerShellInstance.Invoke();
+            }
         }
     }
 }
