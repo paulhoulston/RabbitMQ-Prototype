@@ -1,21 +1,32 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
+using System.Linq;
 
 namespace Integration.WebApi.SelfHosting.Configuration
 {
-    public class EventsMappingSection : ConfigurationSection, EventsMappingSection.IContainEventMappings
+    public class EventsMappingSection : ConfigurationSection
     {
-        public interface IContainEventMappings
+        public class MappedEvent
         {
-            EventsCollection Events { get; }
+            public string Script { get; set; }
+            public TypeOfScript ScriptType { get; set; }
         }
 
-        public static IContainEventMappings Settings = (IContainEventMappings)ConfigurationManager.GetSection("eventTypeMapping");
+        public static IDictionary<string, MappedEvent> MappedEvents = ((EventsMappingSection)ConfigurationManager.GetSection("eventTypeMapping")).Events.Cast<EventElement>().ToDictionary(ev => ev.EventType, ev => new MappedEvent { ScriptType = ev.ScriptType, Script = Path.Combine(((EventsMappingSection)ConfigurationManager.GetSection("eventTypeMapping")).ScriptsFolder, ev.Script) });
 
         [ConfigurationProperty("events", IsDefaultCollection = false)]
         [ConfigurationCollection(typeof(EventsCollection), AddItemName = "add")]
         public EventsCollection Events
         {
             get { return (EventsCollection)base["events"]; }
+        }
+
+        [ConfigurationProperty("scriptsFolder", IsRequired = false, DefaultValue = "")]
+        public string ScriptsFolder
+        {
+            get { return (string)this["scriptsFolder"]; }
+            set { this["scriptsFolder"] = value; }
         }
     }
 }

@@ -28,31 +28,20 @@ namespace Integration.WebApi.SelfHosting.Events
         static void HandleEvent(object _, BasicDeliverEventArgs ea)
         {
             var message = DeserializeEvent(ea);
-            var eventMapping = GetEventScriptHandler(message);
 
-            if (eventMapping == null)
+            if (EventsMappingSection.MappedEvents.ContainsKey(message.EventType))
             {
-                Console.WriteLine("No script defined to handle event '{0}'", message.EventType);
+                var eventMapping = EventsMappingSection.MappedEvents[message.EventType];
+                Console.WriteLine("Executing script '{1}' [{2}] for event '{0}'", message.EventType, eventMapping.Script, eventMapping.ScriptType);
+                _scriptExecutors[eventMapping.ScriptType].Execute(eventMapping.Script, message.Data);
                 return;
             }
-
-            Console.WriteLine("Executing script '{1}' [{2}] for event '{0}'", eventMapping.EventType, eventMapping.Script, eventMapping.EventType);
-            _scriptExecutors[eventMapping.ScriptType].Execute(eventMapping.Script, message.Data);
+            Console.WriteLine("No event mapping found for event '{0}'", message.EventType);
         }
 
         static Message DeserializeEvent(BasicDeliverEventArgs ea)
         {
             return JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(ea.Body));
-        }
-
-        static EventElement.IAmAnEventMapping GetEventScriptHandler(Message eventObj)
-        {
-            return
-                EventsMappingSection
-                    .Settings
-                    .Events
-                    .Cast<EventElement.IAmAnEventMapping>()
-                    .SingleOrDefault(evnt => evnt.EventType.Equals(eventObj.EventType));
         }
     }
 }

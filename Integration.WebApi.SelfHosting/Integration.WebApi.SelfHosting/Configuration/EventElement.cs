@@ -2,15 +2,8 @@ using System.Configuration;
 
 namespace Integration.WebApi.SelfHosting.Configuration
 {
-    public class EventElement : ConfigurationElement, EventElement.IAmAnEventMapping
+    public class EventElement : ConfigurationElement
     {
-        public interface IAmAnEventMapping
-        {
-            string EventType { get; }
-            string Script { get; }
-            TypeOfScript ScriptType { get; set; }
-        }
-
         [ConfigurationProperty("eventType", IsRequired = true, IsKey = true)]
         public string EventType
         {
