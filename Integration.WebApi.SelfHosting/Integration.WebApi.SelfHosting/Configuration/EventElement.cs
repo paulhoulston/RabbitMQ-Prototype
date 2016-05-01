@@ -11,11 +11,6 @@ namespace Integration.WebApi.SelfHosting.Configuration
             TypeOfScript ScriptType { get; set; }
         }
 
-        public enum TypeOfScript
-        {
-            PowerShell
-        }
-
         [ConfigurationProperty("eventType", IsRequired = true, IsKey = true)]
         public string EventType
         {

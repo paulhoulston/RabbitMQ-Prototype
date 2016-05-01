@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Integration.WebApi.SelfHosting.Configuration;
@@ -11,6 +13,11 @@ namespace Integration.WebApi.SelfHosting.Events
 {
     class EventHandler
     {
+        static readonly IDictionary<TypeOfScript, IExecuteScripts> _scriptExecutors = new Dictionary<TypeOfScript, IExecuteScripts>
+        {
+            {TypeOfScript.PowerShell, new ExecutePowerShellScript() }
+        };
+
         public EventHandler(IModel channel)
         {
             var consumer = new EventingBasicConsumer(channel);
@@ -18,18 +25,34 @@ namespace Integration.WebApi.SelfHosting.Events
             channel.BasicConsume(queue: "hello", noAck: true, consumer: consumer);
         }
 
-        private static void HandleEvent(object model, BasicDeliverEventArgs ea)
+        static void HandleEvent(object _, BasicDeliverEventArgs ea)
         {
-            var message = JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(ea.Body));
+            var message = DeserializeEvent(ea);
+            var eventMapping = GetEventScriptHandler(message);
 
-            var eventMapping =
+            if (eventMapping == null)
+            {
+                Console.WriteLine("No script defined to handle event '{0}'", message.EventType);
+                return;
+            }
+
+            Console.WriteLine("Executing script '{1}' [{2}] for event '{0}'", eventMapping.EventType, eventMapping.Script, eventMapping.EventType);
+            _scriptExecutors[eventMapping.ScriptType].Execute(eventMapping.Script, message.Data);
+        }
+
+        static Message DeserializeEvent(BasicDeliverEventArgs ea)
+        {
+            return JsonConvert.DeserializeObject<Message>(Encoding.UTF8.GetString(ea.Body));
+        }
+
+        static EventElement.IAmAnEventMapping GetEventScriptHandler(Message eventObj)
+        {
+            return
                 EventsMappingSection
                     .Settings
                     .Events
                     .Cast<EventElement.IAmAnEventMapping>()
-                    .SingleOrDefault(evnt => evnt.EventType.Equals(message.EventType));
-            
-            Console.WriteLine("Received event type '{0}', run script '{1}'", message.EventType, eventMapping == null ? "not found" : eventMapping.Script);
+                    .SingleOrDefault(evnt => evnt.EventType.Equals(eventObj.EventType));
         }
     }
 }
